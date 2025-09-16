@@ -1,12 +1,11 @@
 ---
 layout: default
-title: phone odometry test
+title: phone odometry test (since flask is being funny)
 permalink: /phoneOdometry/
 ---
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!--this is just a test since flask is acting funny-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Device Orientation Example</title>
@@ -19,11 +18,19 @@ permalink: /phoneOdometry/
         .data {
             font-size: 20px;
         }
+        #startBtn {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <h1>Device Orientation (Rotation) Data</h1>
     <p>Move your device to see the orientation data:</p>
+    
+    <button id="startBtn">Enable Motion Access</button>
+
     <div class="data">
         <p>Alpha (Z-axis): <span id="alpha">0</span>°</p>
         <p>Beta (X-axis): <span id="beta">0</span>°</p>
@@ -31,22 +38,37 @@ permalink: /phoneOdometry/
     </div>
 
     <script>
-        // Check if the DeviceOrientation API is available
-        if (window.DeviceOrientationEvent) {
-            window.addEventListener('deviceorientation', function(event) {
-                // Extract rotation data
-                const alpha = event.alpha; // Rotation around the Z-axis
-                const beta = event.beta;   // Rotation around the X-axis
-                const gamma = event.gamma; // Rotation around the Y-axis
+        const startBtn = document.getElementById('startBtn');
 
-                // Update the page with the current rotation values
-                document.getElementById('alpha').textContent = alpha.toFixed(2);
-                document.getElementById('beta').textContent = beta.toFixed(2);
-                document.getElementById('gamma').textContent = gamma.toFixed(2);
-            }, false);
-        } else {
-            alert("Device Orientation is not supported on this device.");
+        function handleOrientation(event) {
+            const alpha = event.alpha;
+            const beta = event.beta;
+            const gamma = event.gamma;
+
+            document.getElementById('alpha').textContent = alpha?.toFixed(2);
+            document.getElementById('beta').textContent = beta?.toFixed(2);
+            document.getElementById('gamma').textContent = gamma?.toFixed(2);
         }
+
+        startBtn.addEventListener('click', function () {
+            // iOS 13+ requires permission
+            if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission()
+                    .then(response => {
+                        if (response === 'granted') {
+                            window.addEventListener('deviceorientation', handleOrientation, false);
+                            startBtn.style.display = 'none';
+                        } else {
+                            alert('Permission denied for device orientation.');
+                        }
+                    })
+                    .catch(console.error);
+            } else {
+                // Non-iOS devices
+                window.addEventListener('deviceorientation', handleOrientation, false);
+                startBtn.style.display = 'none';
+            }
+        });
     </script>
 </body>
 </html>
