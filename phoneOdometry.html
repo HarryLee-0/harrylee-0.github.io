@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--this is just a test since flask is acting funny-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Orientation Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        .data {
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Device Orientation (Rotation) Data</h1>
+    <p>Move your device to see the orientation data:</p>
+    <div class="data">
+        <p>Alpha (Z-axis): <span id="alpha">0</span>°</p>
+        <p>Beta (X-axis): <span id="beta">0</span>°</p>
+        <p>Gamma (Y-axis): <span id="gamma">0</span>°</p>
+    </div>
+
+    <script>
+        // Check if the DeviceOrientation API is available
+        if (window.DeviceOrientationEvent) {
+            window.addEventListener('deviceorientation', function(event) {
+                // Extract rotation data
+                const alpha = event.alpha; // Rotation around the Z-axis
+                const beta = event.beta;   // Rotation around the X-axis
+                const gamma = event.gamma; // Rotation around the Y-axis
+
+                // Update the page with the current rotation values
+                document.getElementById('alpha').textContent = alpha.toFixed(2);
+                document.getElementById('beta').textContent = beta.toFixed(2);
+                document.getElementById('gamma').textContent = gamma.toFixed(2);
+            }, false);
+        } else {
+            alert("Device Orientation is not supported on this device.");
+        }
+    </script>
+</body>
+</html>
